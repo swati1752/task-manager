@@ -1,27 +1,36 @@
-const mongodb = require('mongodb');
-const MongoClient = mongodb.MongoClient
+const express = require('express');
+require('./db/mongoose')
+const Task = require('./models/task');
+const User = require('./models/user');
 
-// const id = new mongodb.ObjectId()
-// console.log(id);
 
-const connectionURL =  'mongodb://127.0.0.1:27017'
-const databaseName = 'task-manag'
+const app = express()
+const port = process.env.PORT || 3000
 
-MongoClient.connect(connectionURL, { useNewUrlParser: true} , (e, c) =>{
-    if(e){
-        return console.log('error')
-    }
-    const db = c.db(databaseName);
+app.use(express.json())
 
-    const col1 = db.collection('users')
-    
-    col1.insertOne({
-        name:"nd",
-        age:21
-    }, (e , r) =>{
-        if(e){
-            return console.log('error')
-        }
-        console.log(r);
-    })
+app.get('/users' , (req,res) =>{
+    res.send('hohohoh')
+})
+
+app.post('/users' , (req,res)=>{
+    const user = new User(req.body)
+    user.save()
+    .then(() => { res.send(user) })
+    .catch((error) => { res.send('404')})
+})
+
+app.get('/tasks' , (req,res) =>{
+    res.send('hahahaa')
+})
+
+app.post('/tasks' , (req,res)=>{
+    const newtask = new Task(req.body)
+    newtask.save()
+    .then(() => { res.send(newtask) })
+    .catch((error) => { res.send('404')})
+})
+
+app.listen( port , ()=>{
+    console.log('Server running at port 3000');
 })
