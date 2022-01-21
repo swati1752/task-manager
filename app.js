@@ -2,34 +2,21 @@ const express = require('express');
 require('./db/mongoose')
 const Task = require('./models/task');
 const User = require('./models/user');
+const UserR = require('./routers/user');
+const TaskR = require('./routers/task');
+
 
 
 const app = express()
 const port = process.env.PORT || 3000
 
 app.use(express.json())
+app.use(UserR)
+app.use(TaskR)
 
-app.get('/users' , (req,res) =>{
-    res.send('hohohoh')
-})
 
-app.post('/users' , (req,res)=>{
-    const user = new User(req.body)
-    user.save()
-    .then(() => { res.send(user) })
-    .catch((error) => { res.send('404')})
-})
-
-app.get('/tasks' , (req,res) =>{
-    res.send('hahahaa')
-})
-
-app.post('/tasks' , (req,res)=>{
-    const newtask = new Task(req.body)
-    newtask.save()
-    .then(() => { res.send(newtask) })
-    .catch((error) => { res.send('404')})
-})
+// ObjectId("61e6b272be95f2d6e86560f9") - users
+// ObjectId("61e4f17d060a1c64e097b8d1") - tasks
 
 app.listen( port , ()=>{
     console.log('Server running at port 3000');
