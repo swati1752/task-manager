@@ -1,5 +1,6 @@
 const express = require('express');
-const User = require('../models/task'); 
+const { ObjectId } = require('mongoose');
+const Task = require('../models/task'); 
 const router = express.Router();
 
 router.get('/tasks' , async (req,res) => {
@@ -28,6 +29,29 @@ router.post('/tasks' , async (req,res)=>{
     catch  { res.status(500).send()}
 })
 
+router.patch('/tasks/:id' , async(req,res) =>{
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['name' , 'description']
+    const isValidOperation = updates.every((updates) => allowedUpdates.includes(updates))
+    if(!isValidOperation) {
+        return res.status(400).send({ error: 'invalid updates'})
+    }
+
+    try{
+        const task = await Task.findById(req.params.id)
+        updates.forEach(updates => {
+            task[updates] = req.body[updates]
+        });
+        await task.save()
+        if(!task){
+            return res.status(404).send()
+        }
+        res.send(task)
+    }
+    catch {
+        res.status(400).send(e)
+    }
+})
 
 router.delete('/tasks/:id', async (req, res) => {
     const task = await Task.findOneAndDelete(req.params.id)

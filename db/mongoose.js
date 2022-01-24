@@ -10,10 +10,10 @@ mongoose.connect( 'mongodb://127.0.0.1:27017/task-manager-api' ,
     useCreateIndex: true
 })
 .then((db)=>{
-    console.log('done');
+    console.log('mongod done');
 })
 .catch((e)=>{
-    console.log('error');
+    console.log('database error');
 })
 
 // const User = mongoose.model('User' , {
