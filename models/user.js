@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema( {
     name:{
@@ -37,10 +38,27 @@ const UserSchema = new mongoose.Schema( {
                 throw new Error('Age not valid')
             }
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type:       String,
+            required:   true,
+        },
+    }]
 })
 
-UserSchema.statics.findByCredentials = async (email, password) => {
+// process.env.JWT_SECRET
+
+UserSchema.methods.generateAuthToken = async function () {
+    const user = this
+    const token = jwt.sign({ _id: user._id.toString() }, 'its_a_secret')
+    // console.log(token);
+    user.tokens = user.tokens.concat({ token })
+    await user.save()
+    return token
+}
+
+UserSchema.statics.findByCredentials = async function(email, password)  {
     const user = await User.findOne({ email: email })
     if (!user) {
         throw new Error("Unable to login")
@@ -50,8 +68,7 @@ UserSchema.statics.findByCredentials = async (email, password) => {
     if (!isMatch) {
         throw new Error("Unable to login")
     }
-    console.log('gottt itttt');
-    return user
+    return user;
 }
 
 UserSchema.pre('save' , async (next) =>{
@@ -59,6 +76,7 @@ UserSchema.pre('save' , async (next) =>{
     console.log('Just before saving');
     next()
 })
+
 UserSchema.pre('save', async function() {
      let salt = await bcrypt.genSalt(10)
      let hashString = await bcrypt.hash(this.password, salt)
