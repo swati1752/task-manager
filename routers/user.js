@@ -12,7 +12,7 @@ router.post("/users/login", async (req, res) => {
         res.send({user:user, token})
         // res.send(user)
     } catch (e) {
-        res.status(400).send(e)
+        res.status(400).send("User not found")
     }
 })
 
@@ -58,15 +58,7 @@ router.post('/users' , async(req,res) => {
 
 // read user
 router.get('/users/me' , auth , async (req,res) =>{
-    // try {
-    //     const user = await User.find({})
-    //     res.send(req.user)
-    // } catch(e){
-    //     res.status(500).send()
-    // }
     res.send(req.user)
-
-
 })
 
 router.get('/users/:id' , async (req,res)=>{
@@ -86,7 +78,7 @@ router.get('/users/:id' , async (req,res)=>{
 
 
 
-router.patch('/users/:id' , async(req,res) =>{
+router.patch('/users/me' ,auth ,  async(req,res) =>{
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name' , 'email' , 'password' , 'age']
     const isValidOperation = updates.every((updates) => allowedUpdates.includes(updates))
@@ -95,15 +87,11 @@ router.patch('/users/:id' , async(req,res) =>{
     }
 
     try{
-        const user = await User.findById(req.params.id)
         updates.forEach(updates => {
-            user[updates] = req.body[updates]
+            req.user[updates] = req.body[updates]
         });
-        await user.save()
-        if(!user){
-            return res.status(404).send()
-        }
-        res.send(user)
+        await req.user.save();
+        res.send(req.user)
     }
     catch {
         res.status(400).send(e)
@@ -111,17 +99,14 @@ router.patch('/users/:id' , async(req,res) =>{
 })
 
 
-router.delete('/users/:id', async (req, res) => {
-    const user = await User.findOneAndDelete(req.params.id)
-    try {
-
-        if (!user) {
-            res.status(404).send()
-        }
-
-        res.send(user)
-    } catch (e) {
-        res.status(500).send()
+router.delete('/users/me',auth , async (req, res) => {
+    
+    try{
+        await req.user.remove()
+        res.send(req.user)
+    }
+    catch(e){
+        res.status(500).send("not done");
     }
 })
 
