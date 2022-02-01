@@ -3,6 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Task = require('./task');
+const { Timestamp } = require('mongodb');
 
 const UserSchema = new mongoose.Schema( {
     name:{
@@ -46,13 +47,15 @@ const UserSchema = new mongoose.Schema( {
             required:true
         }
     }]
+}, {
+    timestamps:true
 })
 
 
 UserSchema.virtual('tasks' , {
     ref:'Task',
     localField:'_id',
-    foreignField:'owner'
+    foreignField:'owner'    
 })
 
 // passing necessary data to sever
