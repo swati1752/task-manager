@@ -21,10 +21,10 @@ router.post('/tasks' , auth , async (req,res) => {
 router.get('/tasks/:id' , auth ,async (req,res)=>{
     const _id = req.params.id
     try {
-    const task = await Task.findById({_id, owner: req.user._id})
-        res.send(task)
+    const task = await Task.findOne({_id, owner: req.user._id})
+    res.send(task)
     } 
-    catch(e) { res.send('not found')}
+    catch(e) { res.status(500).send('not found')}
 })
 
 
