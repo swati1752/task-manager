@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require ('dotenv').config()
 const Task = require('./task');
 const { Timestamp } = require('mongodb');
 
@@ -76,7 +77,7 @@ UserSchema.methods.toJSON = function() {
 
 UserSchema.methods.generateAuthToken = async function () {
     const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, 'its_a_secret')
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_TOKEN)
     // console.log(token);
     user.tokens = user.tokens.concat({ token:token })
 

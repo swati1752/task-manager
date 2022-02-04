@@ -3,6 +3,7 @@ const { ObjectId } = require('mongoose');
 const multer = require('multer');
 const sharp = require('sharp');
 const User = require('../models/user'); 
+const {sendWelcomeEmail , sendDelEmail} = require('../emails/myacc')
 const auth = require('../middlewear/auth.js');
 const router = express.Router();
 
@@ -96,6 +97,7 @@ router.post('/users' , async(req,res) => {
     const user = new User(req.body)
     try{
         await user.save()
+        sendWelcomeEmail(user.email , user.name)
         const token = await user.generateAuthToken()
         res.status(201).send({ user, token })
     } catch(e) {
@@ -151,6 +153,7 @@ router.delete('/users/me',auth , async (req, res) => {
     
     try{
         await req.user.remove()
+        sendDelEmail(req.user.email , req.user.name)
         res.send(req.user)
     }
     catch(e){
