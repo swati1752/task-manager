@@ -1,6 +1,7 @@
 const sgMail = require('@sendgrid/mail')
+if (process.env.NODE_ENV !== 'production') 
+if (process.env.NODE_ENV !== 'production') 
 require ('dotenv').config()
-
 sgMail.setApiKey(process.env.SECRET_API_KEY)
 
 const sendWelcomeEmail = (email , name) => {
