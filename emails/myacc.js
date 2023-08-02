@@ -1,11 +1,25 @@
-const sgMail = require('@sendgrid/mail')
-if (process.env.NODE_ENV !== 'production') 
-if (process.env.NODE_ENV !== 'production') 
-require ('dotenv').config()
-sgMail.setApiKey(process.env.SECRET_API_KEY)
+const nodemailer = require('nodemailer');
+require('dotenv').config()
 
-const sendWelcomeEmail = (email , name) => {
-    sgMail.send({
+const transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 465,
+    secure: true, 
+    service:'gmail',
+    auth: {
+      user: process.env.SENDER_EMAIL, 
+      pass: process.env.SENDER_PASS, 
+      authentication:'plain'
+    },
+    tls : {
+        rejectUnauthorized:false
+    }
+  });
+
+
+
+const sendWelcomeEmail = async(email , name) => {
+    await transporter.sendMail({
         to:email,
         from: 'swasti1752@gmail.com',
         subject: "Welcome",
@@ -13,8 +27,8 @@ const sendWelcomeEmail = (email , name) => {
     })
 }
 
-const sendDelEmail = (email , name) =>{
-    sgMail.send({
+const sendDelEmail = async (email , name) =>{
+    await transporter.sendMail({
         to: email,
         from: 'swasti1752@gmail.com',
         subject:`GoodBye ${name}`,
